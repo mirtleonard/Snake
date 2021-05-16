@@ -1,37 +1,68 @@
-var board, line, column, direction, lose;
+var board, snake, gameOver = false;
+
+class Snake {
+  constructor() {
+    this.direction = "";
+    this.line = [];
+    this.column = [];
+    this.size = 1;
+    this.line[0] = 13;
+    this.column[0] = 13;
+    $('#l' + this.line[0] + 'c' + this.column[0]).attr(
+      'style', 'background-color:black');
+  }
+  update(nextLine, nextColumn) {
+    $('#l' + this.line[this.size - 1] + 'c' + this.column[this.size - 1]).attr(
+      'style', 'background-color:springGreen');
+    for (var i = this.size - 1; i > 0; i--) {
+      this.line[i] = line[i + 1];
+      this.column[i] = column[i + 1];
+    }
+    this.line[0] = nextLine;
+    this.column[0] = nextColumn;
+    $('#l' + this.line[0] + 'c' + this.column[0]).attr(
+      'style', 'background-color:black');
+  }
+}
 
 function startGame() {
   $("#board").empty();
   createBoard();
-  lose = 0;
-  line = column = 13;
-  $('#l' + line + 'c' + column).attr(
-    'style', 'background-color:black');
-    setInterval(move, 100);
-  }
+  gameOver = false;
+  snake = new Snake();
+  setInterval(move, 100);
+}
 
-function verify(number) {
-  return (number < 0 || number > 24);
+function verify(line, column) {
+  gameOver = (line < 0 || line > 24) || gameOver;
+  gameOver = (column < 0 || column > 24) || gameOver;
+  for (var i = 1; i < snake.size; i++) {
+    if (line == snake.line[i] && column == snake.column[i]) {
+      gameOver = true;
+    }
+  }
 }
 
 function move() {
-  if (lose == 1)
+  if (gameOver)
     return;
-  $('#l' + line + 'c' + column).attr(
-    'style', 'background-color:springGreen');
-  if (direction == "up") {
+  line = snake.line[0];
+  column = snake.column[0];
+  if (snake.direction == "up") {
     line--;
-  } else if (direction == "down") {
+  } else if (snake.direction == "down") {
     line++;
-  } else if (direction == "left") {
+  } else if (snake.direction == "left") {
     column--;
-  } else if (direction == "right")
-  column++;
-  if (verify(column) || verify(line)) {
-      lose = 1;
-      alert("Ai pierdut");
+  } else if (snake.direction == "right") {
+    column++;
   }
-
+  verify(line, column);
+  if (gameOver)  {
+    alert("Ai pierdut");
+  } else {
+    snake.update(line, column);
+  }
   $('#l' + line + 'c' + column).attr(
     'style', 'background-color:black');
 }
@@ -39,13 +70,13 @@ function move() {
 
 $(document).on("keydown", function (where) {
   if (where.which == 37) {
-    direction = "left";
+    snake.direction = "left";
   } else if (where.which == 38) {
-    direction = "up";
+    snake.direction = "up";
   } else if (where.which == 39) {
-    direction = "right";
+    snake.direction = "right";
   } else if (where.which == 40) {
-    direction = "down";
+    snake.direction = "down";
   }
 });
 
