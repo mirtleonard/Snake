@@ -86,7 +86,7 @@ class Snake {
     this.size++;
     game.updateScore();
   }
-  //in move is computed the next move and verifyed the state of game
+  //in move is computed the next move and verifyed the state of the game
   move() {
     if (game.over) {
       return;
