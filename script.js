@@ -12,17 +12,47 @@ class Snake {
       'style', 'background-color:black');
   }
   update(nextLine, nextColumn) {
-    $('#l' + this.line[this.size - 1] + 'c' + this.column[this.size - 1]).attr(
-      'style', 'background-color:springGreen');
+      $('#l' + this.line[this.size - 1] + 'c' + this.column[this.size - 1]).attr(
+        'style', 'background-color:springGreen');
+    console.log(this.line[this.size - 1], this.column[this.size - 1]);
     for (var i = this.size - 1; i > 0; i--) {
-      this.line[i] = line[i + 1];
-      this.column[i] = column[i + 1];
+      this.line[i] = this.line[i - 1];
+      this.column[i] = this.column[i - 1];
     }
     this.line[0] = nextLine;
     this.column[0] = nextColumn;
     $('#l' + this.line[0] + 'c' + this.column[0]).attr(
       'style', 'background-color:black');
   }
+  eat() {
+    this.size++;
+  }
+  move() {
+    if (gameOver) {
+      return;
+    }
+    var line = snake.line[0];
+    var column = snake.column[0];
+    if (snake.direction == "up") {
+      line--;
+    } else if (snake.direction == "down") {
+      line++;
+    } else if (snake.direction == "left") {
+      column--;
+    } else if (snake.direction == "right") {
+      column++;
+    }
+    if (line == 0 && column == 0)
+      snake.eat();
+    verify(line, column);
+    if (gameOver)  {
+      alert("Ai pierdut");
+    } else {
+      snake.update(line, column);
+    }
+    $('#l' + line + 'c' + column).attr(
+      'style', 'background-color:black');
+    }
 }
 
 function startGame() {
@@ -30,7 +60,7 @@ function startGame() {
   createBoard();
   gameOver = false;
   snake = new Snake();
-  setInterval(move, 100);
+  setInterval(snake.move, 100);
 }
 
 function verify(line, column) {
@@ -42,31 +72,6 @@ function verify(line, column) {
     }
   }
 }
-
-function move() {
-  if (gameOver)
-    return;
-  line = snake.line[0];
-  column = snake.column[0];
-  if (snake.direction == "up") {
-    line--;
-  } else if (snake.direction == "down") {
-    line++;
-  } else if (snake.direction == "left") {
-    column--;
-  } else if (snake.direction == "right") {
-    column++;
-  }
-  verify(line, column);
-  if (gameOver)  {
-    alert("Ai pierdut");
-  } else {
-    snake.update(line, column);
-  }
-  $('#l' + line + 'c' + column).attr(
-    'style', 'background-color:black');
-}
-
 
 $(document).on("keydown", function (where) {
   if (where.which == 37) {
