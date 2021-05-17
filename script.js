@@ -1,4 +1,19 @@
-var board, snake, gameOver = false;
+var board, snake, gameOver = false, food;
+
+class Food {
+    constructor () {
+        this.line = 0;
+        this.column = 0;
+    }
+    change() {
+        $("#l" + this.line + "c" + this.column).attr(
+          'style', 'background-color:springGreen');
+        this.line = Math.floor(Math.random() * 24);
+        this.column = Math.floor(Math.random() * 24);
+        $("#l" + this.line + "c" + this.column).attr(
+          'style', 'background-color: red');
+    }
+}
 
 class Snake {
   constructor() {
@@ -42,8 +57,10 @@ class Snake {
     } else if (snake.direction == "right") {
       column++;
     }
-    if (line == 0 && column == 0)
+    if (line == food.line && column == food.column) {
+      food.change();
       snake.eat();
+    }
     verify(line, column);
     if (gameOver)  {
       alert("Ai pierdut");
@@ -59,6 +76,8 @@ function startGame() {
   $("#board").empty();
   createBoard();
   gameOver = false;
+  food = new Food();
+  food.change();
   snake = new Snake();
   setInterval(snake.move, 100);
 }
