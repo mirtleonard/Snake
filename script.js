@@ -8,7 +8,7 @@ function startGame() {
   game.updateScore();
   food.change();
   if (notSet) {
-    setInterval(snake.move, 5 0);
+    setInterval(snake.move, 100);
     notSet = false;
   }
 }
