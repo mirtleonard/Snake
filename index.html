@@ -9,10 +9,18 @@
 </head>
 <body>
   <div class="container">
-    <div id="board"  style="margin-top : 30vh">
+    <div class="menu d-flex justify-content-center">
       <div>
-        <h1>Snake</h1>
-        <button class="btn btn-primary" onclick="startGame()"> Start Game</button>
+        <h2 id="score"> </h2>
+        <button class="btn btn-success"  onclick = "startGame()"> Reset </button>
+      </div>
+    </div>
+    <div id="board"  style="margin-top : 30vh">
+      <div class="d-flex justify-content-center">
+        <div>
+          <h1>Snake</h1>
+          <button class="btn btn-primary" onclick="startGame()"> Start Game</button>
+        </div>
       </div>
     </div>
   </div>
