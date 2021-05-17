@@ -78,7 +78,7 @@ class Snake {
     this.column[0] = nextColumn;
     $('#l' + this.line[0] + 'c' + this.column[0]).attr(
       'style', 'background-color:black');
-    // here is updated the food, to do not change it's colour
+    // here is updated food, to do not change it's colour
     $("#l" + food.line + "c" + food.column).attr(
       'style', 'background-color: red');
   }
@@ -86,7 +86,7 @@ class Snake {
     this.size++;
     game.updateScore();
   }
-  //in move is computed the next move and verify if the game will end
+  //in move is computed the next move and verifyed the state of game
   move() {
     if (game.over) {
       return;
@@ -102,7 +102,7 @@ class Snake {
     } else if (snake.direction == "right") {
       column++;
     }
-    // if the on the next move is food then snake will eat
+    // if on the next move is food then snake will eat
     if (line == food.line && column == food.column) {
       food.change();
       snake.eat();
