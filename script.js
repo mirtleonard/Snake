@@ -10,8 +10,6 @@ class Food {
           'style', 'background-color:springGreen');
         this.line = Math.floor(Math.random() * 24);
         this.column = Math.floor(Math.random() * 24);
-        $("#l" + this.line + "c" + this.column).attr(
-          'style', 'background-color: red');
     }
 }
 
@@ -29,7 +27,6 @@ class Snake {
   update(nextLine, nextColumn) {
       $('#l' + this.line[this.size - 1] + 'c' + this.column[this.size - 1]).attr(
         'style', 'background-color:springGreen');
-    console.log(this.line[this.size - 1], this.column[this.size - 1]);
     for (var i = this.size - 1; i > 0; i--) {
       this.line[i] = this.line[i - 1];
       this.column[i] = this.column[i - 1];
@@ -38,6 +35,9 @@ class Snake {
     this.column[0] = nextColumn;
     $('#l' + this.line[0] + 'c' + this.column[0]).attr(
       'style', 'background-color:black');
+
+    $("#l" + food.line + "c" + food.column).attr(
+      'style', 'background-color: red');
   }
   eat() {
     this.size++;
@@ -93,13 +93,13 @@ function verify(line, column) {
 }
 
 $(document).on("keydown", function (where) {
-  if (where.which == 37) {
+  if (where.which == 37 && snake.direction != "right") {
     snake.direction = "left";
-  } else if (where.which == 38) {
+  } else if (where.which == 38 && snake.direction != "down") {
     snake.direction = "up";
-  } else if (where.which == 39) {
+  } else if (where.which == 39 && snake.direction != "left") {
     snake.direction = "right";
-  } else if (where.which == 40) {
+  } else if (where.which == 40 && snake.direction != "up") {
     snake.direction = "down";
   }
 });
