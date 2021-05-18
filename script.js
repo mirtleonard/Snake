@@ -24,8 +24,9 @@ class Game {
       if (this.score > highScore) {
         highScore = this.score;
       }
-      $("#score").html("Score: " + this.score + "<br/>" + "HighScore: " + highScore);
+    $("#score").html("Score: " + this.score + "<br/>" + "HighScore: " + highScore);
   }
+  //game graphics :)
   createBoard() {
     $("#board").empty();
     for (var i = 0; i < 25; i++) {
@@ -44,6 +45,7 @@ class Game {
       }
     }
   }
+  //it checks if the snake hits a wall or eats itself
   verify(line, column) {
     game.over = (line < 0 || line > 24) || game.over;
     game.over = (column < 0 || column > 24) || game.over;
@@ -113,9 +115,7 @@ class Snake {
     } else {
       snake.update(line, column);
     }
-    $('#l' + line + 'c' + column).attr(
-      'style', 'background-color:black');
-    }
+  }
 }
 
 class Food {
@@ -123,6 +123,7 @@ class Food {
     this.line = 0;
     this.column = 0;
   }
+  //when food is eaten, it changes location random
   change() {
     $("#l" + this.line + "c" + this.column).attr(
       'style', 'background-color:springGreen');
@@ -131,6 +132,7 @@ class Food {
   }
 }
 
+// detects the key press and change direction
 $(document).on("keydown", function (where) {
   if (where.which == 37 && snake.direction != "right") {
     snake.direction = "left";
