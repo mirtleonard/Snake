@@ -5,7 +5,7 @@ function startGame() {
   food = new Food();
   snake = new Snake();
   game.createBoard();
-  game.updateScore();
+  game.updateScore(0);
   food.change();
   if (notSet) {
     setInterval(snake.move, 100);
@@ -14,17 +14,26 @@ function startGame() {
 }
 
 class Game {
+  #board; #score; #over;
   constructor() {
-    this.board = new Array(25);
-    this.score = -50;
-    this.over = false;
+    this.#board = new Array(25);
+    this.#over = false;
   }
-  updateScore() {
-    this.score += 50;
-      if (this.score > highScore) {
-        highScore = this.score;
-      }
-    $("#score").html("Score: " + this.score + "<br/>" + "HighScore: " + highScore);
+  get getScore () {
+    return this.#score;
+  }
+  get getOver() {
+    return this.#over;
+  }
+  set setGameOver(state) {
+    this.#over = state;
+  }
+  updateScore(score) {
+    this.#score = score;
+    if (this.#score > highScore) {
+      highScore = this.#score;
+    }
+    $("#score").html("Score: " + this.#score + "<br/>" + "HighScore: " + highScore);
   }
   //game graphics :)
   createBoard() {
@@ -34,7 +43,7 @@ class Game {
         id : i,
         class : "d-flex justify-content-center",
       });
-      this.board[i] = new Array(25);
+      this.#board[i] = new Array(25);
       $("#board").append(line);
       for (var j = 0; j < 25; j++) {
         var cell = $('<div>').attr({
@@ -45,102 +54,120 @@ class Game {
       }
     }
   }
+}
+
+class Snake{
+  #direction = ""; #column = []; #line = []; #size = 1;
+  constructor() {
+      this.#column[0] = 13;
+      this.#line[0] = 13;
+      $('#l' + this.#line[0] + 'c' + this.#column[0]).attr(
+        'style', 'background-color:black');
+  }
+  set setDirection(direction) {
+    this.#direction = direction;
+  }
+  set setSize(size) {
+    this.#size = size;
+  }
+  get getSize() {
+    return this.#size;
+  }
+  get getDirection() {
+    return this.#direction;
+  }
+  get getLine() {
+    return this.#line[0];
+  }
+  get getColumn() {
+    return this.#column[0];
+  }
+  // update snake with one possition forward
+  update(nextLine, nextColumn) {
+    $('#l' + this.#line[this.#size - 1] + 'c' + this.#column[this.#size - 1]).attr(
+      'style', 'background-color:springGreen');
+    for (var i = this.#size - 1; i > 0; i--) {
+      this.#line[i] = this.#line[i - 1];
+      this.#column[i] = this.#column[i -1];
+    }
+    this.#line[0] = nextLine;
+    this.#column[0] = nextColumn;
+    $('#l' + this.#line[0] + 'c' + this.#column[0]).attr(
+      'style', 'background-color:black');
+    // here is updated food, to do not change it's colour
+    $("#l" + food.getLine + "c" + food.getColumn).attr(
+      'style', 'background-color: red');
+  }
+  move() {
+    if (game.getOver) {
+      return;
+    }
+    var line = snake.getLine;
+    var column = snake.getColumn;
+    if (snake.getDirection == "up") {
+      line--;
+    } else if (snake.getDirection == "down") {
+      line++;
+    } else if (snake.getDirection == "left") {
+      column--;
+    } else if (snake.getDirection == "right") {
+      column++;
+    }
+    // if on the next move is food then snake will eat
+    if (line == food.getLine && column == food.getColumn) {
+      snake.setSize = snake.getSize + 1;
+      game.updateScore(game.getScore + 50);
+      food.change();
+    }
+    snake.verify(line, column);
+    if (game.getOver) {
+        $(".modal").modal();
+    } else {
+        snake.update(line, column);
+    }
+  }
   //it checks if the snake hits a wall or eats itself
   verify(line, column) {
-    game.over = (line < 0 || line > 24) || game.over;
-    game.over = (column < 0 || column > 24) || game.over;
-    for (var i = 1; i < snake.size; i++) {
-      if (line == snake.line[i] && column == snake.column[i]) {
-        game.over = true;
+    if ((line < 0 || line > 24) || (column < 0 || column > 24))
+      game.setGameOver = true;
+    for (var i = 1; i < this.#size; i++) {
+      if (line == this.#line[i] && column == this.#column[i]) {
+        game.setGameOver = true;
       }
     }
   }
 }
-
-class Snake {
-  constructor() {
-    this.direction = "";
-    this.line = [];
-    this.column = [];
-    this.size = 1;
-    this.line[0] = 13;
-    this.column[0] = 13;
-    $('#l' + this.line[0] + 'c' + this.column[0]).attr(
-      'style', 'background-color:black');
-  }
-// update snake with one possition forward
-  update(nextLine, nextColumn) {
-    $('#l' + this.line[this.size - 1] + 'c' + this.column[this.size - 1]).attr(
-      'style', 'background-color:springGreen');
-    for (var i = this.size - 1; i > 0; i--) {
-      this.line[i] = this.line[i - 1];
-      this.column[i] = this.column[i - 1];
-    }
-    this.line[0] = nextLine;
-    this.column[0] = nextColumn;
-    $('#l' + this.line[0] + 'c' + this.column[0]).attr(
-      'style', 'background-color:black');
-    // here is updated food, to do not change it's colour
-    $("#l" + food.line + "c" + food.column).attr(
-      'style', 'background-color: red');
-  }
-  eat() {
-    this.size++;
-    game.updateScore();
-  }
-  //in move is computed the next move and verifyed the state of the game
-  move() {
-    if (game.over) {
-      return;
-    }
-    var line = snake.line[0];
-    var column = snake.column[0];
-    if (snake.direction == "up") {
-      line--;
-    } else if (snake.direction == "down") {
-      line++;
-    } else if (snake.direction == "left") {
-      column--;
-    } else if (snake.direction == "right") {
-      column++;
-    }
-    // if on the next move is food then snake will eat
-    if (line == food.line && column == food.column) {
-      food.change();
-      snake.eat();
-    }
-    game.verify(line, column);
-    if (game.over)  {
-      $(".modal").modal();
-    } else {
-      snake.update(line, column);
-    }
-  }
-}
-
 class Food {
+  #line; #column;
   constructor () {
-    this.line = 0;
-    this.column = 0;
+    this.#line = 0;
+    this.#column = 0;
   }
   //when food is eaten, it changes location random
   change() {
-    $("#l" + this.line + "c" + this.column).attr(
+    $("#l" + this.#line + "c" + this.#column).attr(
       'style', 'background-color:springGreen');
-    this.line = Math.floor(Math.random() * 24);
-    this.column = Math.floor(Math.random() * 24);
+    this.#line = Math.floor(Math.random() * 24);
+    this.#column = Math.floor(Math.random() * 24);
+  }
+  get getLine () {
+    return this.#line;
+  }
+  get getColumn() {
+    return this.#column;
   }
 }
 
+
 // detects the key press and change direction
 $(document).on("keydown", function (where) {
-  if (where.which == 37 && snake.direction != "right") {
-    snake.direction = "left";
-  } else if (where.which == 38 && snake.direction != "down") {
-    snake.direction = "up";
-  } else if (where.which == 39 && snake.direction != "left") {
-    snake.direction = "right";
-  } else if (where.which == 40 && snake.direction != "up") {
-    snake.direction = "down";
+  if (where.which == 37 && snake.getDirection != "right") {
+    snake.setDirection = "left";
+  } else if (where.which == 38 && snake.getDirection != "down") {
+    snake.setDirection = "up";
+  } else if (where.which == 39 && snake.getDirection != "left") {
+    snake.setDirection = "right";
+  } else if (where.which == 40 && snake.getDirection != "up") {
+    snake.setDirection = "down";
   }
 });
